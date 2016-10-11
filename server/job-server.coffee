@@ -20,7 +20,7 @@ SlackAPI = Meteor.npmRequire( 'node-slack' )
         Slack = new SlackAPI(slackHookUrl)
         console.log("Sending message to Slack")
         Slack.send({
-          text: JSON.stringify(jobData)
+          text: JSON.stringify({name: jobData.name, group: jobData.group, status: jobData.status})
         });
       catch e 
         console.error(e)
