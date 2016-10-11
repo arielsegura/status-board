@@ -6,6 +6,7 @@ Template['edit-http-service'].events
       group: e.target.groupName.value
       url: e.target.url.value
       regex: e.target.regex.value
+      slackHookUrl : e.target.slackHookUrl.value
 
     if @service
       Meteor.call 'updateHttpService', @service._id, jobData

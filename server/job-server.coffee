@@ -1,3 +1,5 @@
+SlackAPI = Meteor.npmRequire( 'node-slack' )
+
 @FailJob = (job, callback, err) ->
   jobData = job.data
   date = new Date()
@@ -5,11 +7,23 @@
     lastCheck: date
     lastDownTime: date
     isUp: false
+  previousJobData = Services.findOne {name: jobData.name}
   Services.update {name: jobData.name, type: jobData.type, group: jobData.group}, $set: status
   ServiceStatus.insert
     serviceId: jobData._id
     date: jobData.lastCheck
     isUp: jobData.isUp
+  if jobData.isUp isnt previousJobData.isUp 
+    slackHookUrl = jobData.slackHookUrl
+    if typeof slackHookUrl isnt "undefined"
+      try 
+        Slack = new SlackAPI(slackHookUrl)
+        console.log("Sending message to Slack")
+        Slack.send({
+          text: JSON.stringify(jobData)
+        });
+      catch e 
+        console.error(e)
   callback()
 
 @CompleteJob = (job, callback) ->
