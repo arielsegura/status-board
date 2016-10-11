@@ -13,17 +13,22 @@ SlackAPI = Meteor.npmRequire( 'node-slack' )
     serviceId: jobData._id
     date: jobData.lastCheck
     isUp: jobData.isUp
-  if jobData.isUp isnt previousJobData.isUp 
+  console.log("deciding whether to notify or not")
+  if previousJobData.isUp isnt false 
     slackHookUrl = jobData.slackHookUrl
     if typeof slackHookUrl isnt "undefined"
       try 
         Slack = new SlackAPI(slackHookUrl)
         console.log("Sending message to Slack")
         Slack.send({
-          text: JSON.stringify({name: jobData.name, group: jobData.group, status: jobData.status})
+          text: JSON.stringify({name: jobData.name, group: jobData.group, url: jobData.url, status: "down"})
         });
       catch e 
         console.error(e)
+    else
+      console.log("Should have notified but slack is not configured")
+  else
+    console.log("Status already notified")
   callback()
 
 @CompleteJob = (job, callback) ->
